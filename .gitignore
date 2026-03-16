@@ -24,3 +24,5 @@ target/
 
 # === Docker ===
 .docker/
+target/
+*.war
