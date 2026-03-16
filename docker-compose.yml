@@ -1,0 +1,29 @@
+services:
+  bookstore-db:
+    image: mysql:8.0
+    container_name: bookstore-db
+    environment:
+      MYSQL_DATABASE: ${DB_NAME}
+      MYSQL_USER: ${DB_USER}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
+    volumes:
+      - ./setup.sql:/docker-entrypoint-initdb.d/setup.sql  # <--- ADICIONE ESTA LINHA
+    ports:
+      - "3306:3306"
+    healthcheck:
+      test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+
+  bookstore-app:
+    image: kazu-livraria:${APP_IMAGE_TAG}
+    container_name: bookstore-app
+    depends_on:
+      bookstore-db:
+        condition: service_healthy
+    ports:
+      - "8080:8080"
+      - "9990:9990"

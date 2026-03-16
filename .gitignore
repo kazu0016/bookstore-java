@@ -1,0 +1,26 @@
+# === Segurança (Secretos) ===
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# === Maven / Java (Arquivos de Build) ===
+target/
+*.war
+*.ear
+*.jar
+*.class
+
+# === IDEs (Arquivos específicos do seu editor) ===
+.settings/
+.project
+.classpath
+.metadata/
+.idea/
+*.iml
+*.swp
+*.DS_Store
+
+# === Docker ===
+.docker/
