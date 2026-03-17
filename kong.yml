@@ -2,10 +2,17 @@ _format_version: "1.1"
 
 services:
   - name: bookstore-service
-    url: http://bookstore-app:8080/  # <--- APONTE PARA A RAIZ (Sem o bookstore)
+    url: http://bookstore-app:8080/
     routes:
       - name: bookstore-route
         paths:
           - /
-        strip_path: false            # <--- MANTÉM O CAMINHO ORIGINAL
-        preserve_host: true          # <--- EVITA ERRO DE DNS
+        strip_path: false
+        preserve_host: true
+
+# --- ADICIONE ESTA PARTE AQUI EMBAIXO ---
+plugins:
+  - name: rate-limiting
+    config:
+      second: 5
+      policy: local
