@@ -1,0 +1,13 @@
+_format_version: "1.1"
+services:
+  - name: bookstore-service
+    url: http://bookstore-app:8080/bookstore
+    routes:
+      - name: bookstore-route
+        paths:
+          - /api
+plugins:
+  - name: rate-limiting
+    config:
+      second: 5
+      policy: local
