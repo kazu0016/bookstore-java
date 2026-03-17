@@ -1,18 +1,21 @@
+version: "3.8"
+
 services:
   bookstore-db:
     image: mysql:8.0
     container_name: bookstore-db
     environment:
-      MYSQL_DATABASE: ${DB_NAME}
-      MYSQL_USER: ${DB_USER}
-      MYSQL_PASSWORD: ${DB_PASSWORD}
-      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
+      MYSQL_DATABASE: "${DB_NAME:-bookstore}"
+      MYSQL_USER: "${DB_USER:-bookstore}"
+      MYSQL_PASSWORD: "${DB_PASSWORD:-secret}"
+      MYSQL_ROOT_PASSWORD: "${DB_ROOT_PASSWORD:-rootsecret}"
     volumes:
       - ./setup.sql:/docker-entrypoint-initdb.d/setup.sql
+      - db_data:/var/lib/mysql
     ports:
       - "3306:3306"
     healthcheck:
-      test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost"]
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -20,11 +23,13 @@ services:
       - bookstore-network
 
   bookstore-app:
-    image: kazu-livraria:${APP_IMAGE_TAG}
+    image: kazu-livraria:${APP_IMAGE_TAG:-latest}
     container_name: bookstore-app
     depends_on:
-      bookstore-db:
-        condition: service_healthy
+      - bookstore-db
+    environment:
+      JBOSS_BIND_ADDRESS: "0.0.0.0"
+      JBOSS_BIND_ADDRESS_MANAGEMENT: "0.0.0.0"
     ports:
       - "8080:8080"
       - "9990:9990"
@@ -32,21 +37,25 @@ services:
       - bookstore-network
 
   kong:
-    image: kong:latest
+    image: kong:3.5
     container_name: bookstore-gateway
+    depends_on:
+      - bookstore-app
     volumes:
-      - ./kong.yml:/usr/local/kong/declarative/kong.yml
+      - ./kong.yml:/usr/local/kong/declarative/kong.yml:ro
     environment:
       KONG_DATABASE: "off"
-      KONG_DECLARATIVE_CONFIG: /usr/local/kong/declarative/kong.yml
-      KONG_PROXY_LISTEN: 0.0.0.0:8000
-      KONG_ADMIN_LISTEN: 0.0.0.0:8001
+      KONG_DECLARATIVE_CONFIG: "/usr/local/kong/declarative/kong.yml"
+      KONG_PROXY_LISTEN: "0.0.0.0:8000"
+      KONG_ADMIN_LISTEN: "0.0.0.0:8001"
     ports:
-      - "8000:8000"
+      - "80:8000"
       - "8001:8001"
     networks:
       - bookstore-network
 
 networks:
   bookstore-network:
-    driver: bridge
+
+volumes:
+  db_data:
