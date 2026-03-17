@@ -15,14 +15,7 @@ Frontend	JSF + PrimeFaces (implícito)
 🏗️ Arquitetura
 plain
 Copy
-┌─────────────────┐     ┌─────────────────┐     ┌─────────────────┐
-│   Navegador     │────▶│  WildFly 26     │────▶│   MySQL 8.0     │
-│                 │◄────│   (JSF App)     │◄────│                 │
-└─────────────────┘     └─────────────────┘     └─────────────────┘
-        ▲                       ▲                       ▲
-        │                       │                       │
-        └───────────────────────┴───────────────────────┘
-                          Docker Compose
+![Diagrama da Arquitetura do Sistema](./imagens/diagrama.png)
 📦 Pré-requisitos
 Docker 20.10+
 Docker Compose 2.0+
